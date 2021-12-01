@@ -30,7 +30,7 @@ fn part1_main() -> u16 {
   increased
 }
 
-#[cfg(test)] #[test]
+#[test]
 fn part1_test() {
   assert_eq!(part1_main(), 1692);
 }
@@ -60,7 +60,7 @@ fn part2_main() -> u16 {
   increased
 }
 
-#[cfg(test)] #[test]
+#[test]
 fn part2_test() {
   assert_eq!(part2_main(), 1724);
 }
