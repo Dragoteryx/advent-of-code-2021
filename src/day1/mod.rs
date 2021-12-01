@@ -38,8 +38,8 @@ pub fn part2() {
       depths.get(i + 2)
     ) {
       let previous = depth_z + depth_a + depth_b;
-      let depth = depth_a + depth_b + depth_c;
-      if depth > previous {
+      let measurement = depth_a + depth_b + depth_c;
+      if measurement > previous {
         increased += 1;
       }
     }
