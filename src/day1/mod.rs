@@ -14,35 +14,53 @@ fn depths() -> Vec<u16> {
 // part 1
 
 pub fn part1() {
+  println!("The depth increased {} times", part1_main());
+}
+
+fn part1_main() -> u16 {
   let depths = depths();
   let mut increased = 0u16;
   for (i, depth) in depths.iter().enumerate() {
-    if let Some(previous) = depths.get(i - 1) {
-      if depth > previous {
+    if let Some(next) = depths.get(i + 1) {
+      if depth < next {
         increased += 1;
       }
     }
   }
-  println!("The depth increased {} times", increased);
+  increased
+}
+
+#[cfg(test)] #[test]
+fn part1_test() {
+  assert_eq!(part1_main(), 1692);
 }
 
 // part 2
 
 pub fn part2() {
+  println!("The measurement increased {} times", part2_main());
+}
+
+fn part2_main() -> u16 {
   let depths = depths();
   let mut increased = 0u16;
   for (i, depth_a) in depths.iter().enumerate() {
-    if let (Some(depth_z), Some(depth_b), Some(depth_c)) = (
-      depths.get(i - 1),
+    if let (Some(depth_b), Some(depth_c), Some(depth_d)) = (
       depths.get(i + 1),
-      depths.get(i + 2)
+      depths.get(i + 2),
+      depths.get(i + 3)
     ) {
-      let previous = depth_z + depth_a + depth_b;
       let measurement = depth_a + depth_b + depth_c;
-      if measurement > previous {
+      let next = depth_b + depth_c + depth_d;
+      if measurement < next {
         increased += 1;
       }
     }
   }
-  println!("The measurement increased {} times", increased);
+  increased
+}
+
+#[cfg(test)] #[test]
+fn part2_test() {
+  assert_eq!(part2_main(), 1724);
 }
