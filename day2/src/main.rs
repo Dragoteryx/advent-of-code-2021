@@ -82,6 +82,7 @@ fn part2_test() {
 // main
 
 fn main() {
+  println!("--- day 2 ---");
   println!("part 1: {}", part1());
   println!("part 2: {}", part2());
 }

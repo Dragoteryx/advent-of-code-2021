@@ -38,8 +38,8 @@ fn part2() -> u16 {
   let mut increased = 0;
   for w in measurements.windows(2) {
     let (m1, m2) = (w[0], w[1]);
-    let depth1 = m1[0] + m1[1] + m1[2];
-    let depth2 = m2[0] + m2[1] + m2[2];
+    let depth1: u16 = m1.iter().sum();
+    let depth2: u16 = m2.iter().sum();
     if depth1 < depth2 { increased += 1 }
   }
   increased
@@ -53,6 +53,7 @@ fn part2_test() {
 // main
 
 fn main() {
+  println!("--- day 1 ---");
   println!("part 1: {}", part1());
   println!("part 2: {}", part2());
 }
