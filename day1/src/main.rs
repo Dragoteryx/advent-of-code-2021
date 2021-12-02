@@ -1,6 +1,6 @@
 use std::fs;
 
-// util
+// part 1
 
 fn depths() -> Vec<u16> {
   fs::read_to_string("src/input.txt")
@@ -9,8 +9,6 @@ fn depths() -> Vec<u16> {
     .map(|depth| depth.parse().expect("Failed to parse depth"))
     .collect()
 }
-
-// part 1
 
 fn part1() -> u16 {
   let depths = depths();
@@ -29,14 +27,17 @@ fn part1_test() {
 
 // part 2
 
+fn measurements() -> Vec<[u16; 3]> {
+  depths().windows(3)
+    .map(|w| [w[0], w[1], w[2]])
+    .collect()
+}
+
 fn part2() -> u16 {
-  let depths = depths();
-  let measurements: Vec<_> = depths.windows(3)
-    .map(|window| [window[0], window[1], window[2]])
-    .collect();
+  let measurements = measurements();
   let mut increased = 0;
-  for window in measurements.windows(2) {
-    let (m1, m2) = (window[0], window[1]);
+  for w in measurements.windows(2) {
+    let (m1, m2) = (w[0], w[1]);
     let depth1 = m1[0] + m1[1] + m1[2];
     let depth2 = m2[0] + m2[1] + m2[2];
     if depth1 < depth2 { increased += 1 }

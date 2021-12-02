@@ -16,9 +16,9 @@ impl FromStr for Command {
     let mut iter = s.split_whitespace();
     if let (Some(cmd), Some(Ok(arg))) = (iter.next(), iter.next().map(|s| s.parse())) {
       match cmd {
-        "forward" => Ok(Command::Forward(arg)),
-        "up" => Ok(Command::Up(arg)),
-        "down" => Ok(Command::Down(arg)),
+        "forward" => Ok(Self::Forward(arg)),
+        "up" => Ok(Self::Up(arg)),
+        "down" => Ok(Self::Down(arg)),
         _ => Err(())
       }
     } else {
