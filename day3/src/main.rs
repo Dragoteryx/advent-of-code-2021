@@ -110,6 +110,11 @@ fn part2() -> u32 {
   oxygen_generator_rating(&numbers) * co2_scrubber_rating(&numbers)
 }
 
+#[test]
+fn part2_test() {
+  assert_eq!(part2(), 4412188);
+}
+
 // main
 
 fn main() {
