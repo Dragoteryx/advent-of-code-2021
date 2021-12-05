@@ -1,5 +1,4 @@
 use std::str::FromStr;
-use std::fs;
 
 // commands
 
@@ -28,8 +27,7 @@ impl FromStr for Command {
 }
 
 fn commands() -> Vec<Command> {
-  fs::read_to_string("src/input.txt")
-    .expect("Failed to read input")
+  include_str!("input.txt")
     .lines()
     .map(|s| s.parse().expect("Failed to parse command"))
     .collect()

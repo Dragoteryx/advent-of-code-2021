@@ -1,6 +1,3 @@
-use std::str::FromStr;
-use std::fs;
-
 // bingo
 
 #[derive(Debug, Clone)]
@@ -76,12 +73,11 @@ impl Bingo {
 // util
 
 fn read_input() -> (Vec<u16>, Vec<Bingo>) {
-  let str = fs::read_to_string("src/input.txt")
-    .expect("Failed to read input");
+  let str = include_str!("input.txt");
   let mut lines = str.lines();
   let numbers = lines.next().unwrap()
     .split(',')
-    .map(|s| u16::from_str(s).unwrap())
+    .map(|s| s.parse().unwrap())
     .collect();
   let mut bingos = Vec::new();
   while lines.next().is_some() {
@@ -89,7 +85,7 @@ fn read_input() -> (Vec<u16>, Vec<Bingo>) {
     for bingo_line in bingo.iter_mut() {
       let mut line = lines.next().unwrap()
         .split_whitespace()
-        .map(|s| u16::from_str(s).unwrap());
+        .map(|s| s.parse().unwrap());
       for bingo_num in bingo_line.iter_mut() {
         *bingo_num = line.next().unwrap();
       }

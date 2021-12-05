@@ -1,5 +1,4 @@
 use std::cmp::Ordering;
-use std::fs;
 
 // util
 
@@ -7,8 +6,7 @@ const N: usize = 12;
 type Bits = [bool; N];
 
 fn numbers() -> Vec<Bits> {
-  fs::read_to_string("src/input.txt")
-    .expect("Failed to read input")
+  include_str!("input.txt")
     .lines()
     .map(|number| {
       let mut bits = [false; N];

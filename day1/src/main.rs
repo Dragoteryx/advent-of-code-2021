@@ -1,10 +1,7 @@
-use std::fs;
-
 // part 1
 
 fn depths() -> Vec<u16> {
-  fs::read_to_string("src/input.txt")
-    .expect("Failed to read input")
+  include_str!("input.txt")
     .lines()
     .map(|depth| depth.parse().expect("Failed to parse depth"))
     .collect()
