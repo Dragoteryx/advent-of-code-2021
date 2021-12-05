@@ -3,14 +3,13 @@
 fn depths() -> Vec<u16> {
   include_str!("input.txt")
     .lines()
-    .map(|depth| depth.parse().expect("Failed to parse depth"))
+    .map(|depth| depth.parse().unwrap())
     .collect()
 }
 
 fn part1() -> u16 {
-  let depths = depths();
   let mut increased = 0;
-  for window in depths.windows(2) {
+  for window in depths().windows(2) {
     let (depth1, depth2) = (window[0], window[1]);
     if depth1 < depth2 { increased += 1 }
   }
@@ -31,9 +30,8 @@ fn measurements() -> Vec<[u16; 3]> {
 }
 
 fn part2() -> u16 {
-  let measurements = measurements();
   let mut increased = 0;
-  for w in measurements.windows(2) {
+  for w in measurements().windows(2) {
     let (m1, m2) = (w[0], w[1]);
     let depth1: u16 = m1.iter().sum();
     let depth2: u16 = m2.iter().sum();

@@ -72,13 +72,12 @@ impl Bingo {
 
 // util
 
-fn read_input() -> (Vec<u16>, Vec<Bingo>) {
+fn read_input() -> (impl Iterator<Item = u16>, Vec<Bingo>) {
   let str = include_str!("input.txt");
   let mut lines = str.lines();
   let numbers = lines.next().unwrap()
     .split(',')
-    .map(|s| s.parse().unwrap())
-    .collect();
+    .map(|s| s.parse().unwrap());
   let mut bingos = Vec::new();
   while lines.next().is_some() {
     let mut bingo = [[0; 5]; 5];

@@ -1,5 +1,3 @@
-use std::str::FromStr;
-
 // commands
 
 enum Command {
@@ -8,37 +6,27 @@ enum Command {
   Down(u32)
 }
 
-impl FromStr for Command {
-  type Err = ();
-
-  fn from_str(s: &str) -> Result<Self, ()> {
-    let mut iter = s.split_whitespace();
-    if let (Some(cmd), Some(Ok(arg))) = (iter.next(), iter.next().map(|s| s.parse())) {
-      match cmd {
-        "forward" => Ok(Self::Forward(arg)),
-        "up" => Ok(Self::Up(arg)),
-        "down" => Ok(Self::Down(arg)),
-        _ => Err(())
-      }
-    } else {
-      Err(())
-    }
-  }
-}
-
-fn commands() -> Vec<Command> {
+fn commands() -> impl Iterator<Item = Command> {
   include_str!("input.txt")
     .lines()
-    .map(|s| s.parse().expect("Failed to parse command"))
-    .collect()
+    .map(|line| {
+      let mut iter = line.split_whitespace();
+      let cmd = iter.next().unwrap();
+      let arg = iter.next().unwrap().parse().unwrap();
+      match cmd {
+        "forward" => Command::Forward(arg),
+        "up" => Command::Up(arg),
+        "down" => Command::Down(arg),
+        _ => panic!("Invalid command")
+      }
+    })
 }
 
 // part 1
 
 fn part1() -> u32 {
-  let commands = commands();
   let mut pos = (0, 0);
-  for command in commands {
+  for command in commands() {
     match command {
       Command::Forward(n) => pos.0 += n,
       Command::Up(n) => pos.1 -= n,
@@ -56,10 +44,9 @@ fn part1_test() {
 // part 2
 
 fn part2() -> u32 {
-  let commands = commands();
   let mut pos = (0, 0);
   let mut aim = 0;
-  for command in commands {
+  for command in commands() {
     match command {
       Command::Up(n) => aim -= n,
       Command::Down(n) => aim += n,
