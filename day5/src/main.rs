@@ -10,9 +10,9 @@ struct Vents {
 }
 
 impl Vents {
-  pub fn line(&self, diagonals: bool) -> VentsLine {
+  pub fn iter(&self, diagonals: bool) -> VentsIter {
     let Self { from, to } = *self;
-    VentsLine {
+    VentsIter {
       from: Some(from),
       to, diagonals
     }
@@ -21,13 +21,13 @@ impl Vents {
 
 // vents line
 
-struct VentsLine {
+struct VentsIter {
   from: Option<(u32, u32)>,
   to: (u32, u32),
   diagonals: bool
 }
 
-impl Iterator for VentsLine {
+impl Iterator for VentsIter {
   type Item = (u32, u32);
 
   fn next(&mut self) -> Option<Self::Item> {
@@ -83,7 +83,7 @@ fn vents() -> impl Iterator<Item = Vents> {
 fn calculate_overlaps(diagonals: bool) -> u32 {
   let mut grid = HashMap::new();
   for vent in vents() {
-    for point in vent.line(diagonals) {
+    for point in vent.iter(diagonals) {
       *grid.entry(point).or_insert(0u32) += 1;
     }
   }
