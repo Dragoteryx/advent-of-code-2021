@@ -14,11 +14,8 @@ fn lanternfishes() -> [u64; 9] {
 fn iter(n: u64) -> u64 {
   let mut fishes = lanternfishes();
   for _ in 0..n {
-    let children = fishes[0];
-    fishes[..7].rotate_left(1);
-    fishes[6] += fishes[7];
-    fishes[7] = fishes[8];
-    fishes[8] = children;
+    fishes.rotate_left(1);
+    fishes[6] += fishes[8];
   }
   fishes.iter().sum()
 }
