@@ -83,24 +83,23 @@ fn part1_test() {
 
 // part 2
 
-fn find_by_criteria(numbers: &[Bits], bit: usize, oxygen: bool) -> u32 {
-  let crit = if oxygen { most_common_bit(bit, numbers).unwrap_or(true) }
-    else { least_common_bit(bit, numbers).unwrap_or(false) };
+fn find_by_criteria(numbers: &[Bits], bit: usize, criteria: impl Fn(usize, &[Bits]) -> bool) -> u32 {
+  let crit = criteria(bit, numbers);
   let filtered: Vec<_> = numbers.iter()
     .filter(|bits| bits[bit] == crit)
     .copied().collect();
   match filtered[..] {
     [bits] => bits_to_number(bits),
-    _ => find_by_criteria(&filtered, bit+1, oxygen)
+    _ => find_by_criteria(&filtered, bit+1, criteria)
   }
 }
 
 fn oxygen_generator_rating(numbers: &[Bits]) -> u32 {
-  find_by_criteria(numbers, 0, true)
+  find_by_criteria(numbers, 0, |bit, numbers| most_common_bit(bit, numbers).unwrap_or(true))
 }
 
 fn co2_scrubber_rating(numbers: &[Bits]) -> u32 {
-  find_by_criteria(numbers, 0, false)
+  find_by_criteria(numbers, 0, |bit, numbers| least_common_bit(bit, numbers).unwrap_or(false))
 }
 
 fn part2() -> u32 {
