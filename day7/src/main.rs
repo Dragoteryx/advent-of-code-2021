@@ -43,10 +43,13 @@ fn part1_test() {
 // part 2
 
 fn part2() -> (u32, u32) {
-  calc_fuel(|mut from, mut to| {
-    if from == to { return 0; }
-    if from > to { swap(&mut from, &mut to); }
-    (1..=(to - from)).into_iter().sum()
+  calc_fuel(|from, to| {
+    let n = match from.cmp(&to) {
+      Ordering::Less => to - from,
+      Ordering::Greater => from - to,
+      Ordering::Equal => 0
+    };
+    (n.pow(2) + n) / 2
   })
 }
 
