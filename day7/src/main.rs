@@ -1,15 +1,13 @@
-use std::cmp::Ordering;
-
 // util
 
-fn positions() -> Vec<u32> {
+fn positions() -> Vec<i32> {
   include_str!("input.txt")
     .split(',')
     .map(|s| s.parse().unwrap())
     .collect()
 }
 
-fn calc_fuel(fuel: impl Fn(u32, u32) -> u32) -> (u32, u32) {
+fn calc_fuel(fuel: impl Fn(i32, i32) -> i32) -> (i32, i32) {
   let positions = positions();
   let min = *positions.iter().min().unwrap();
   let max = *positions.iter().max().unwrap();
@@ -26,12 +24,8 @@ fn calc_fuel(fuel: impl Fn(u32, u32) -> u32) -> (u32, u32) {
 
 // part 1
 
-fn part1() -> (u32, u32) {
-  calc_fuel(|from, to| match from.cmp(&to) {
-    Ordering::Less => to - from,
-    Ordering::Greater => from - to,
-    Ordering::Equal => 0
-  })
+fn part1() -> (i32, i32) {
+  calc_fuel(|from, to| (from - to).abs())
 }
 
 #[test]
@@ -41,14 +35,10 @@ fn part1_test() {
 
 // part 2
 
-fn part2() -> (u32, u32) {
+fn part2() -> (i32, i32) {
   calc_fuel(|from, to| {
-    let n = match from.cmp(&to) {
-      Ordering::Less => to - from,
-      Ordering::Greater => from - to,
-      Ordering::Equal => 0
-    };
-    (n.pow(2) + n) / 2
+    let n = (from - to).abs();
+    n * (n+1) / 2
   })
 }
 
