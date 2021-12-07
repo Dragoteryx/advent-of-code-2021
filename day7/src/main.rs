@@ -1,5 +1,4 @@
 use std::cmp::Ordering;
-use std::mem::swap;
 
 // util
 
@@ -10,17 +9,17 @@ fn positions() -> Vec<u32> {
     .collect()
 }
 
-fn calc_fuel(calc: impl Fn(u32, u32) -> u32) -> (u32, u32) {
+fn calc_fuel(fuel: impl Fn(u32, u32) -> u32) -> (u32, u32) {
   let positions = positions();
   let min = *positions.iter().min().unwrap();
   let max = *positions.iter().max().unwrap();
   (min..=max).into_iter()
-    .map(|pos| (pos, positions.iter().fold(0, |acc, &p| acc + calc(p, pos))))
-    .reduce(|acc, (pos, fuel)| {
-      if fuel < acc.1 {
-        (pos, fuel)
+    .map(|pos| (pos, positions.iter().fold(0, |acc, &p| acc + fuel(p, pos))))
+    .reduce(|(pos, fuel), (new_pos, new_fuel)| {
+      if new_fuel < fuel {
+        (new_pos, new_fuel)
       } else {
-        acc
+        (pos, fuel)
       }
     }).unwrap()
 }
