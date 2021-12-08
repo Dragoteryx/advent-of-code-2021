@@ -1,67 +1,36 @@
-use std::ops::{Deref, Add, Sub};
 use std::collections::HashSet;
-use itertools::Itertools;
+
+// char 
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+enum Char {
+  A, B, C, D,
+  E, F, G
+}
+
+impl From<char> for Char {
+  fn from(c: char) -> Self {
+    match c {
+      'a' => Self::A,
+      'b' => Self::B,
+      'c' => Self::C,
+      'd' => Self::D,
+      'e' => Self::E,
+      'f' => Self::F,
+      'g' => Self::G,
+      _ => panic!("Invalid char")
+    }
+  }
+}
 
 // signal
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-struct Signal(String);
-
-impl Signal {
-  pub fn new(s: &str) -> Self {
-    Self(s.chars().sorted().collect())
-  }
-
-  pub fn is_one(&self) -> bool {
-    self.len() == 2
-  }
-
-  pub fn is_four(&self) -> bool {
-    self.len() == 4
-  }
-
-  pub fn is_seven(&self) -> bool {
-    self.len() == 3
-  }
-
-  pub fn is_eight(&self) -> bool {
-    self.len() == 7
-  }
+type Signal = HashSet<Char>;
+fn signal(s: &str) -> Signal {
+  s.chars().map(Char::from).collect()
 }
 
-impl Deref for Signal {
-  type Target = String;
-
-  fn deref(&self) -> &String {
-    &self.0
-  }
-}
-
-impl Add for &Signal {
-  type Output = Signal;
-
-  fn add(self, other: Self) -> Signal {
-    let mut chars = HashSet::new();
-    for c in self.chars() { chars.insert(c); }
-    for c in other.chars() { chars.insert(c); }
-    let s: String = chars.into_iter().collect();
-    Signal::new(&s)
-  }
-}
-
-impl Sub for &Signal {
-  type Output = Signal;
-
-  fn sub(self, other: Self) -> Signal {
-    let mut chars = HashSet::new();
-    for c in self.chars() { chars.insert(c); }
-    for c in other.chars() { chars.remove(&c); }
-    let s: String = chars.into_iter().collect();
-    Signal::new(&s)
-  }
-}
-
-// util
+// entry
 
 struct Entry {
   pub inputs: [Signal; 10],
@@ -75,23 +44,23 @@ impl Entry {
     .map(|line| {
       let mut line = line.split_whitespace();
       let inputs = [
-        Signal::new(line.next().unwrap()),
-        Signal::new(line.next().unwrap()),
-        Signal::new(line.next().unwrap()),
-        Signal::new(line.next().unwrap()),
-        Signal::new(line.next().unwrap()),
-        Signal::new(line.next().unwrap()),
-        Signal::new(line.next().unwrap()),
-        Signal::new(line.next().unwrap()),
-        Signal::new(line.next().unwrap()),
-        Signal::new(line.next().unwrap())
+        signal(line.next().unwrap()),
+        signal(line.next().unwrap()),
+        signal(line.next().unwrap()),
+        signal(line.next().unwrap()),
+        signal(line.next().unwrap()),
+        signal(line.next().unwrap()),
+        signal(line.next().unwrap()),
+        signal(line.next().unwrap()),
+        signal(line.next().unwrap()),
+        signal(line.next().unwrap())
       ];
       line.next().unwrap();
       let outputs = [
-        Signal::new(line.next().unwrap()),
-        Signal::new(line.next().unwrap()),
-        Signal::new(line.next().unwrap()),
-        Signal::new(line.next().unwrap())
+        signal(line.next().unwrap()),
+        signal(line.next().unwrap()),
+        signal(line.next().unwrap()),
+        signal(line.next().unwrap())
       ];
       Entry { outputs, inputs }
     })
@@ -108,24 +77,30 @@ fn part1() -> usize {
     .count()
 }
 
+#[test]
+fn part1_test() {
+  assert_eq!(part1(), 381);
+}
+
 // part 2
 
 fn part2() -> u32 {
   Entry::iter().map(|entry| {
-    let one = entry.inputs.iter().find(|sig| sig.is_one()).unwrap();
-    let four = entry.inputs.iter().find(|sig| sig.is_four()).unwrap();
-    let seven = entry.inputs.iter().find(|sig| sig.is_seven()).unwrap();
-    let eight = entry.inputs.iter().find(|sig| sig.is_eight()).unwrap();
+    let one = entry.inputs.iter().find(|sig| sig.len() == 2).unwrap();
+    let four = entry.inputs.iter().find(|sig| sig.len() == 4).unwrap();
+    let seven = entry.inputs.iter().find(|sig| sig.len() == 3).unwrap();
+    let eight = entry.inputs.iter().find(|sig| sig.len() == 7).unwrap();
+    let four_diff_one = &(four - one);
 
     let len5 = || entry.inputs.iter().filter(|sig| sig.len() == 5);
-    let two = len5().find(|sig| (*sig - four).len() == 3).unwrap();
-    let three = len5().find(|sig| (*sig - one).len() == 3).unwrap();
-    let five = len5().find(|sig| *sig != two && *sig != three).unwrap();
+    let three = len5().find(|sig| sig.is_superset(one)).unwrap();
+    let five = len5().find(|sig| sig.is_superset(four_diff_one)).unwrap();
+    let two = len5().find(|sig| *sig != three && *sig != five).unwrap();
 
     let len6 = || entry.inputs.iter().filter(|sig| sig.len() == 6);
-    let six = len6().find(|sig| (*sig - one).len() == 5).unwrap();
-    let nine = len6().find(|sig| (*sig - &(four + seven)).len() == 1).unwrap();
-    let _zero = len6().find(|sig| *sig != six && *sig != nine).unwrap();
+    let nine = len6().find(|sig| sig.is_superset(four)).unwrap();
+    let six = len6().find(|sig| *sig != nine && sig.is_superset(four_diff_one)).unwrap();
+    let _zero = len6().find(|sig| *sig != nine && *sig != six).unwrap();
 
     let mut value: u32 = 0;
     let [thousands, hundreds, tens, unit] = entry.outputs;
@@ -172,6 +147,11 @@ fn part2() -> u32 {
 
     value
   }).sum()
+}
+
+#[test]
+fn part2_test() {
+  assert_eq!(part2(), 1023686);
 }
 
 // main
