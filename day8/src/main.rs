@@ -18,30 +18,30 @@ struct Entry {
 impl Entry {
   pub fn iter() -> impl Iterator<Item = Entry> {
     include_str!("input.txt")
-    .lines()
-    .map(|line| {
-      let mut line = line.split_whitespace();
-      let inputs = [
-        signal(line.next().unwrap()),
-        signal(line.next().unwrap()),
-        signal(line.next().unwrap()),
-        signal(line.next().unwrap()),
-        signal(line.next().unwrap()),
-        signal(line.next().unwrap()),
-        signal(line.next().unwrap()),
-        signal(line.next().unwrap()),
-        signal(line.next().unwrap()),
-        signal(line.next().unwrap())
-      ];
-      line.next().unwrap();
-      let outputs = [
-        signal(line.next().unwrap()),
-        signal(line.next().unwrap()),
-        signal(line.next().unwrap()),
-        signal(line.next().unwrap())
-      ];
-      Entry { outputs, inputs }
-    })
+      .lines()
+      .map(|line| {
+        let mut line = line.split_whitespace();
+        let inputs = [
+          signal(line.next().unwrap()),
+          signal(line.next().unwrap()),
+          signal(line.next().unwrap()),
+          signal(line.next().unwrap()),
+          signal(line.next().unwrap()),
+          signal(line.next().unwrap()),
+          signal(line.next().unwrap()),
+          signal(line.next().unwrap()),
+          signal(line.next().unwrap()),
+          signal(line.next().unwrap())
+        ];
+        line.next().unwrap();
+        let outputs = [
+          signal(line.next().unwrap()),
+          signal(line.next().unwrap()),
+          signal(line.next().unwrap()),
+          signal(line.next().unwrap())
+        ];
+        Entry { outputs, inputs }
+      })
   }
 }
 
