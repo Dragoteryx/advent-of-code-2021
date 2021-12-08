@@ -91,16 +91,15 @@ fn part2() -> u32 {
     let four = entry.inputs.iter().find(|sig| sig.len() == 4).unwrap();
     let seven = entry.inputs.iter().find(|sig| sig.len() == 3).unwrap();
     let eight = entry.inputs.iter().find(|sig| sig.len() == 7).unwrap();
-    let four_diff_one = &(four - one);
 
     let len5 = || entry.inputs.iter().filter(|sig| sig.len() == 5);
     let three = len5().find(|sig| sig.is_superset(one)).unwrap();
-    let five = len5().find(|sig| sig.is_superset(four_diff_one)).unwrap();
+    let five = len5().find(|sig| sig.is_superset(&(four - one))).unwrap();
     let two = len5().find(|sig| *sig != three && *sig != five).unwrap();
 
     let len6 = || entry.inputs.iter().filter(|sig| sig.len() == 6);
     let nine = len6().find(|sig| sig.is_superset(four)).unwrap();
-    let six = len6().find(|sig| *sig != nine && sig.is_superset(four_diff_one)).unwrap();
+    let six = len6().find(|sig| !sig.is_superset(one)).unwrap();
     let _zero = len6().find(|sig| *sig != nine && *sig != six).unwrap();
 
     let mut value: u32 = 0;
