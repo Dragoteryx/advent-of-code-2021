@@ -44,8 +44,8 @@ impl Add for &Signal {
     let mut chars = HashSet::new();
     for c in self.chars() { chars.insert(c); }
     for c in other.chars() { chars.insert(c); }
-    let str: String = chars.into_iter().collect();
-    Signal::new(&str)
+    let s: String = chars.into_iter().collect();
+    Signal::new(&s)
   }
 }
 
