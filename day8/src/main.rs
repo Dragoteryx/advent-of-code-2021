@@ -1,33 +1,10 @@
 use std::collections::HashSet;
 
-// char 
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-enum Char {
-  A, B, C, D,
-  E, F, G
-}
-
-impl From<char> for Char {
-  fn from(c: char) -> Self {
-    match c {
-      'a' => Self::A,
-      'b' => Self::B,
-      'c' => Self::C,
-      'd' => Self::D,
-      'e' => Self::E,
-      'f' => Self::F,
-      'g' => Self::G,
-      _ => panic!("Invalid char")
-    }
-  }
-}
-
 // signal
 
-type Signal = HashSet<Char>;
+type Signal = HashSet<char>;
 fn signal(s: &str) -> Signal {
-  s.chars().map(Char::from).collect()
+  s.chars().collect()
 }
 
 // entry
