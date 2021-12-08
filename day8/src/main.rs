@@ -32,6 +32,7 @@ fn signal(s: &str) -> Signal {
 
 // entry
 
+#[derive(Debug, Clone)]
 struct Entry {
   pub inputs: [Signal; 10],
   pub outputs: [Signal; 4]
