@@ -20,9 +20,13 @@ fn heightmap() -> Heightmap {
 }
 
 fn locations(heightmap: &Heightmap) -> impl Iterator<Item = Location> + '_ {
-  heightmap.iter().enumerate().flat_map(move |(y, row)| {
-    row.iter().enumerate().map(move |(x, _)| Location::new(heightmap, x, y))
-  })
+  heightmap.iter()
+    .enumerate()
+    .flat_map(move |(y, row)| {
+      row.iter()
+        .enumerate()
+        .map(move |(x, _)| Location::new(heightmap, x, y))
+    })
 }
 
 fn low_points(heightmap: &Heightmap) -> impl Iterator<Item = Location> + '_ {
