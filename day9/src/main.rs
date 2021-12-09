@@ -1,21 +1,22 @@
+#![allow(clippy::ptr_arg)]
+
 use std::collections::HashSet;
 use itertools::Itertools;
-use std::rc::Rc;
 
 // util
 
-type Heightmap = Rc<Vec<Vec<u16>>>;
-type Basin = HashSet<Location>;
+type Heightmap = Vec<Vec<u16>>;
+type Basin<'a> = HashSet<Location<'a>>;
 
 fn heightmap() -> Heightmap {
-  Rc::new(include_str!("input.txt")
+  include_str!("input.txt")
     .lines()
     .map(|line| {
       line.chars()
         .map(|c| c.to_string().parse().unwrap())
         .collect()
     })
-    .collect())
+    .collect()
 }
 
 fn locations(heightmap: &Heightmap) -> impl Iterator<Item = Location> + '_ {
@@ -27,14 +28,14 @@ fn locations(heightmap: &Heightmap) -> impl Iterator<Item = Location> + '_ {
 // location
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-struct Location {
-  heightmap: Heightmap,
+struct Location<'a> {
+  heightmap: &'a Heightmap,
   x: usize, y: usize
 }
 
-impl Location {
-  pub fn new(heightmap: &Heightmap, x: usize, y: usize) -> Self {
-    Self { heightmap: heightmap.clone(), x, y }
+impl<'a> Location<'a> {
+  pub fn new(heightmap: &'a Heightmap, x: usize, y: usize) -> Self {
+    Self { heightmap, x, y }
   }
 
   pub fn height(&self) -> u16 {
@@ -47,7 +48,7 @@ impl Location {
 
   pub fn top(&self) -> Option<Self> {
     if self.y > 0 {
-      Some(Self::new(&self.heightmap, self.x, self.y - 1))
+      Some(Self::new(self.heightmap, self.x, self.y - 1))
     } else {
       None
     }
@@ -55,7 +56,7 @@ impl Location {
 
   pub fn bottom(&self) -> Option<Self> {
     if self.y < self.heightmap.len() - 1 {
-      Some(Self::new(&self.heightmap, self.x, self.y + 1))
+      Some(Self::new(self.heightmap, self.x, self.y + 1))
     } else {
       None
     }
@@ -63,7 +64,7 @@ impl Location {
 
   pub fn left(&self) -> Option<Self> {
     if self.x > 0 {
-      Some(Self::new(&self.heightmap, self.x - 1, self.y))
+      Some(Self::new(self.heightmap, self.x - 1, self.y))
     } else {
       None
     }
@@ -71,7 +72,7 @@ impl Location {
 
   pub fn right(&self) -> Option<Self> {
     if self.x < self.heightmap[0].len() - 1 {
-      Some(Self::new(&self.heightmap, self.x + 1, self.y))
+      Some(Self::new(self.heightmap, self.x + 1, self.y))
     } else {
       None
     }
@@ -93,7 +94,7 @@ impl Location {
     true
   }
 
-  pub fn basin(&self) -> Basin {
+  pub fn basin(&self) -> Basin<'a> {
     if self.height() == 9 {
       Basin::new()
     } else {
