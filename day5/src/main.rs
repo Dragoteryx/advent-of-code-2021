@@ -80,25 +80,21 @@ fn vents() -> impl Iterator<Item = Vents> {
     })
 }
 
-fn calculate_overlaps(diagonals: bool) -> u32 {
+fn calculate_overlaps(diagonals: bool) -> usize {
   let mut grid = HashMap::new();
   for vent in vents() {
     for point in vent.iter(diagonals) {
       *grid.entry(point).or_insert(0u32) += 1;
     }
   }
-  let mut overlaps = 0;
-  for (_, value) in grid {
-    if value > 1 {
-      overlaps += 1;
-    }
-  }
-  overlaps
+  grid.into_iter()
+    .filter(|&(_, count)| count > 1)
+    .count()
 }
 
 // part 1
 
-fn part1() -> u32 {
+fn part1() -> usize {
   calculate_overlaps(false)
 }
 
@@ -109,7 +105,7 @@ fn part1_test() {
 
 // part 2
 
-fn part2() -> u32 {
+fn part2() -> usize {
   calculate_overlaps(true)
 }
 

@@ -105,7 +105,7 @@ impl<'a> Location<'a> {
       self.adjacent()
         .filter(|loc| loc.height() > self.height())
         .flat_map(|loc| loc.basin())
-        .for_each(|loc_basin| basin.extend(loc_basin));
+        .for_each(|basin2| basin.extend(basin2));
       Some(basin)
     }
   }

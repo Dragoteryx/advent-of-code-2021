@@ -3,54 +3,48 @@ use std::collections::HashSet;
 // signal
 
 type Signal = HashSet<char>;
+
 fn signal(s: &str) -> Signal {
   s.chars().collect()
 }
 
 // entry
 
-#[derive(Debug, Clone)]
-struct Entry {
-  pub inputs: [Signal; 10],
-  pub outputs: [Signal; 4]
-}
+type Entry = ([Signal; 10], [Signal; 4]);
 
-impl Entry {
-  pub fn iter() -> impl Iterator<Item = Entry> {
-    include_str!("input.txt")
-      .lines()
-      .map(|line| {
-        let mut line = line.split_whitespace();
-        let inputs = [
-          signal(line.next().unwrap()),
-          signal(line.next().unwrap()),
-          signal(line.next().unwrap()),
-          signal(line.next().unwrap()),
-          signal(line.next().unwrap()),
-          signal(line.next().unwrap()),
-          signal(line.next().unwrap()),
-          signal(line.next().unwrap()),
-          signal(line.next().unwrap()),
-          signal(line.next().unwrap())
-        ];
-        line.next().unwrap();
-        let outputs = [
-          signal(line.next().unwrap()),
-          signal(line.next().unwrap()),
-          signal(line.next().unwrap()),
-          signal(line.next().unwrap())
-        ];
-        Entry { outputs, inputs }
-      })
-  }
+fn entries() -> impl Iterator<Item = Entry> {
+  include_str!("input.txt")
+    .lines()
+    .map(|line| {
+      let mut line = line.split_whitespace();
+      let inputs = [
+        signal(line.next().unwrap()),
+        signal(line.next().unwrap()),
+        signal(line.next().unwrap()),
+        signal(line.next().unwrap()),
+        signal(line.next().unwrap()),
+        signal(line.next().unwrap()),
+        signal(line.next().unwrap()),
+        signal(line.next().unwrap()),
+        signal(line.next().unwrap()),
+        signal(line.next().unwrap())
+      ];
+      line.next().unwrap();
+      let outputs = [
+        signal(line.next().unwrap()),
+        signal(line.next().unwrap()),
+        signal(line.next().unwrap()),
+        signal(line.next().unwrap())
+      ];
+      (inputs, outputs)
+    })
 }
 
 // part 1
 
 fn part1() -> usize {
-  Entry::iter()
-    .map(|entry| entry.outputs)
-    .flatten()
+  entries()
+    .flat_map(|entry| entry.1)
     .filter(|sig| matches!(sig.len(), 2 | 3 | 4 | 7))
     .count()
 }
@@ -63,24 +57,24 @@ fn part1_test() {
 // part 2
 
 fn part2() -> u32 {
-  Entry::iter().map(|entry| {
-    let one = entry.inputs.iter().find(|sig| sig.len() == 2).unwrap();
-    let four = entry.inputs.iter().find(|sig| sig.len() == 4).unwrap();
-    let seven = entry.inputs.iter().find(|sig| sig.len() == 3).unwrap();
-    let eight = entry.inputs.iter().find(|sig| sig.len() == 7).unwrap();
+  entries().map(|(inputs, outputs)| {
+    let one = inputs.iter().find(|sig| sig.len() == 2).unwrap();
+    let four = inputs.iter().find(|sig| sig.len() == 4).unwrap();
+    let seven = inputs.iter().find(|sig| sig.len() == 3).unwrap();
+    let eight = inputs.iter().find(|sig| sig.len() == 7).unwrap();
 
-    let len5 = || entry.inputs.iter().filter(|sig| sig.len() == 5);
+    let len5 = || inputs.iter().filter(|sig| sig.len() == 5);
     let three = len5().find(|sig| sig.is_superset(one)).unwrap();
     let five = len5().find(|sig| sig.is_superset(&(four - one))).unwrap();
     let two = len5().find(|sig| *sig != three && *sig != five).unwrap();
 
-    let len6 = || entry.inputs.iter().filter(|sig| sig.len() == 6);
+    let len6 = || inputs.iter().filter(|sig| sig.len() == 6);
     let nine = len6().find(|sig| sig.is_superset(four)).unwrap();
     let six = len6().find(|sig| !sig.is_superset(one)).unwrap();
     let _zero = len6().find(|sig| *sig != nine && *sig != six).unwrap();
 
     let mut value: u32 = 0;
-    let [thousands, hundreds, tens, unit] = entry.outputs;
+    let [thousands, hundreds, tens, unit] = outputs;
 
     if &thousands == one { value += 1000; }
     else if &thousands == two { value += 2000; }
