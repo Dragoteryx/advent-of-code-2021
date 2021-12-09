@@ -25,9 +25,14 @@ fn locations(heightmap: &Heightmap) -> impl Iterator<Item = Location> + '_ {
   })
 }
 
+fn low_points(heightmap: &Heightmap) -> impl Iterator<Item = Location> + '_ {
+  locations(heightmap)
+    .filter(|loc| loc.is_low_point())
+}
+
 // location
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 struct Location<'a> {
   heightmap: &'a Heightmap,
   x: usize, y: usize
@@ -78,62 +83,38 @@ impl<'a> Location<'a> {
     }
   }
 
-  pub fn is_low_point(&self) -> bool {
-    if let Some(top) = self.top() {
-      if self.height() >= top.height() { return false; }
-    }
-    if let Some(bottom) = self.bottom() {
-      if self.height() >= bottom.height() { return false; }
-    }
-    if let Some(left) = self.left() {
-      if self.height() >= left.height() { return false; }
-    }
-    if let Some(right) = self.right() {
-      if self.height() >= right.height() { return false; }
-    }
-    true
+  pub fn adjacent(&self) -> impl Iterator<Item = Location<'a>> + '_ {
+    [self.top(), self.bottom(), self.left(), self.right()]
+      .into_iter()
+      .flatten()
   }
 
-  pub fn basin(&self) -> Basin<'a> {
+  pub fn is_low_point(&self) -> bool {
+    self.adjacent().all(|loc| loc.height() > self.height())
+  }
+
+  pub fn basin(&self) -> Option<Basin<'a>> {
     if self.height() == 9 {
-      Basin::new()
+      None
     } else {
-      let mut basin = Basin::new();
-      basin.insert(self.clone());
-      if let Some(top) = self.top() {
-        if self.height() < top.height() {
-          basin = &basin | &top.basin();
-        }
-      }
-      if let Some(bottom) = self.bottom() {
-        if self.height() < bottom.height() {
-          basin = &basin | &bottom.basin();
-        }
-      }
-      if let Some(left) = self.left() {
-        if self.height() < left.height() {
-          basin = &basin | &left.basin();
-        }
-      }
-      if let Some(right) = self.right() {
-        if self.height() < right.height() {
-          basin = &basin | &right.basin();
-        }
-      }
-      basin
+      let mut basin = Basin::from([*self]);
+      self.adjacent()
+        .filter(|loc| loc.height() > self.height())
+        .flat_map(|loc| loc.basin())
+        .for_each(|loc_basin| basin.extend(loc_basin));
+      Some(basin)
     }
   }
 
   pub fn basin_size(&self) -> usize {
-    self.basin().len()
+    self.basin().map(|basin| basin.len()).unwrap_or(0)
   }
 }
 
 // part 1
 
 fn part1() -> u16 {
-  locations(&heightmap())
-    .filter(|loc| loc.is_low_point())
+  low_points(&heightmap())
     .map(|loc| loc.risk())
     .sum()
 }
@@ -146,8 +127,7 @@ fn part1_test() {
 // part 2
 
 fn part2() -> usize {
-  locations(&heightmap())
-    .filter(|loc| loc.is_low_point())
+  low_points(&heightmap())
     .map(|loc| loc.basin_size())
     .sorted()
     .rev()
